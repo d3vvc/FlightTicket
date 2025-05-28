@@ -2,8 +2,6 @@ import Flights from "../../models/Flights.js";
 import Seat from '../../models/Seat.js';
 import Users from "../../models/Users.js";
 
-
-
 export const reserveSeatDB = async (seatId, userId) => {
     try{
         const seat = await Seat.findOne({
@@ -26,7 +24,7 @@ export const reserveSeatDB = async (seatId, userId) => {
 
         await seat.update({
             status: 'reserved',
-            locked_by: user,
+            locked_by: userId,
             lock_expiry: new Date(Date.now() + lockTime)
         });
 
