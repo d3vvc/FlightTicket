@@ -8,5 +8,6 @@ router.use(cookieParser());
 
 router.post('/register', Controller.register);
 router.post('/login', Controller.login);
+router.post('/logout', Controller.logout);
 
 export default router;
