@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { errorHandler } from './middleware/ErrorHandling.js';
 import { connectDB } from './config/connectDB.js';
 import authRoutes from './modules/auth/route.js';
 import flightRoutes from './modules/flights/route.js';
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/seats', seatRoutes);
 
+app.use(errorHandler);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running' });

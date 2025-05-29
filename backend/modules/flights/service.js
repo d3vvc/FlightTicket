@@ -1,10 +1,12 @@
 import Flights from "../../models/Flights.js";
 import Seat from '../../models/Seat.js';    
+import Users from "../../models/Users.js";
 import '../../models/model_utils/associations.js';
 import { Op } from 'sequelize';
+import { NotFoundError, AuthorizationError, DatabaseError } from "../../utils/CustomErrors.js";
 
 export const getAllFlightsDB = async () => {
-    try {
+   
         const flights = await Flights.findAll(
             {
                 include: [{
@@ -15,15 +17,16 @@ export const getAllFlightsDB = async () => {
                 }]
             }
         );
+        if (!flights || flights.length === 0) {
+            throw new NotFoundError('No flights found');
+        }
+
         return flights;
-    } catch (error) {
-        console.error("Error fetching flights:", error);
-        throw new Error('Could not fetch flights');
-    }
+    
 }
 
 export const getFlightByNumberDB = async (flightNumber) => {
-    try {
+   
         const flight = await Flights.findOne({
             where: { flightNumber },
             include: [{
@@ -32,18 +35,22 @@ export const getFlightByNumberDB = async (flightNumber) => {
                 attributes: ['id', 'seatNumber', 'seat_class', 'status', 'price']
             }]
         });
+        
         if (!flight) {
-            throw new Error('Flight not found');
+            throw new NotFoundError(`Flight with number ${flightNumber} not found`);
         }
+
         return flight;
-    } catch (error) {
-        console.error("Error fetching flight by ID:", error);
-        throw new Error('Could not fetch flight');
-    }
+   
 }
 
-export const createFlightDB = async (flightData) => {
-    try {
+export const createFlightDB = async (userId, flightData) => {
+
+        const user = await Users.findByPk(userId);
+        if (!user || user.role !== 'admin') {   
+            throw new AuthorizationError('Only admins can create flights');
+        }
+
         const flight = await Flights.create(flightData,{
             include: [{
                 model: Seat,
@@ -51,15 +58,17 @@ export const createFlightDB = async (flightData) => {
                 attributes: ['id', 'seatNumber', 'seat_class', 'status', 'price']
               }]
         });
+        if (!flight) {
+            throw new DatabaseError('Flight creation failed');
+        }
         return flight;
-    } catch (error) {
-        console.error("Error creating flight:", error);
-        throw new Error('Could not create flight');
-    }
+   
 }
 
 export const handleFlightSearchDB = async (origin, destination, seat_class, date, sortBy = 'price') => {
-    try {
+    
+        //add validation error check later - T
+
         const flights = await Flights.findAll({
             where:{
                 origin: origin.toUpperCase(),
@@ -80,10 +89,9 @@ export const handleFlightSearchDB = async (origin, destination, seat_class, date
             order: sortBy === 'time' ? [['departureTime', 'ASC']] : [['id', 'ASC']],
         },
     )
+        if (!flights || flights.length === 0) {
+            throw new NotFoundError('No flights found for the given criteria');
+        }
+        
         return flights
-    }
-    catch (error) {
-        console.error("Error searching flights:", error);
-        throw new Error('Could not search flights');
-    }
 }

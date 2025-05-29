@@ -38,15 +38,15 @@ export const checkLoginStatus = async (email) => {
         throw new Error('Could not check login status');    
     }
 }
-export const recordFailedAttempts = async (username) => {
+export const recordFailedAttempts = async (userId) => {
     try {
         const loginAttempt = await LoginAttempts.findOne({
-            where: { username }
+            where: { userId }
         });
-        
+
         if (!loginAttempt) {
             await LoginAttempts.create({
-                username,
+                userId,
                 incorrectAttempts: 1,
                 lockedUntil: null,
                 lastAttempt: new Date()
@@ -73,7 +73,7 @@ export const recordFailedAttempts = async (username) => {
         throw new Error('Could not record failed attempts');
     }
 }
-export const resetFailedAttempts = async (username) => {
+export const resetFailedAttempts = async (userId) => {
     try{
         await LoginAttempts.update({
             incorrectAttempts: 0,
@@ -82,7 +82,7 @@ export const resetFailedAttempts = async (username) => {
         }
             ,
             {
-            where: { username },
+            where: { userId },
         })
     }
     catch (error) {
