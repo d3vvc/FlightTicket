@@ -1,6 +1,8 @@
 import Flights from "../Flights.js";
 import Seat from "../Seat.js";
 import Users from "../Users.js";
+import LoginAttempts from '../LoginAttempts.js';
+
 
 Flights.hasMany(Seat, {
     foreignKey: 'flightId',
@@ -16,6 +18,15 @@ Users.hasMany(Seat, {
 });
 Seat.belongsTo(Users, {
     foreignKey: 'locked_by',
+    as: 'user'
+});
+Users.hasOne(LoginAttempts, { 
+    foreignKey: 'userId',
+    as: 'loginAttempts'
+});
+
+LoginAttempts.belongsTo(Users, { 
+    foreignKey: 'userId',
     as: 'user'
 });
 
