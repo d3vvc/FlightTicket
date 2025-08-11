@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "nodemon dist/index.js",
+    "dev": "concurrently \"tsc -w\" \"nodemon --watch dist dist/index.js\"",
+    "dev:ts": "nodemon --exec ts-node index.ts",
+    "watch": "tsc -w",
+    "serve": "nodemon dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -12,15 +16,24 @@
   "description": "",
   "dependencies": {
     "bcrpyt": "^2.0.0",
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "node-cron": "^4.1.1",
     "nodemailer": "^7.0.3",
     "pg": "^8.16.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
     "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node-cron": "^3.0.11",
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2"
   }
 }
